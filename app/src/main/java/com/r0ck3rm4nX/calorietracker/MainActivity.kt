@@ -14,6 +14,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.r0ck3rm4nX.calorietracker.ui.theme.CalorieTrackerTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.platform.LocalFocusManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,13 +43,31 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
+
+    var dailyGoal by remember { mutableStateOf("2500") }
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = modifier.padding(16.dp)
     ) {
         Text(text = "Calorie Tracker")
-        Text(text = "Daily Goal: 2500 kcal")
-        Text(text = "Consumed: 0 kcal")
-        Text(text = "Remaining: 2500 kcal")
+        Text(text = "Daily Goal")
+
+        OutlinedTextField(
+            value = dailyGoal,
+            onValueChange = { dailyGoal = it },
+            label = { Text("Calories") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
     }
 }
 
