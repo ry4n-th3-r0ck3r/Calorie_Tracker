@@ -45,7 +45,15 @@ class MainActivity : ComponentActivity() {
 fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
 
     var dailyGoal by remember { mutableStateOf("2500") }
+    var consumed by remember { mutableStateOf("0") }
+    var burned by remember { mutableStateOf("0") }
+
     val focusManager = LocalFocusManager.current
+
+    val goalNumber = dailyGoal.toIntOrNull() ?: 0
+    val consumedNumber = consumed.toIntOrNull() ?: 0
+    val burnedNumber = burned.toIntOrNull() ?: 0
+    val remaining = goalNumber - consumedNumber + burnedNumber
 
     Column(
         modifier = modifier.padding(16.dp)
@@ -53,6 +61,7 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
         Text(text = "Calorie Tracker")
         Text(text = "Daily Goal")
 
+//Calorie goal input. (Input)
         OutlinedTextField(
             value = dailyGoal,
             onValueChange = { dailyGoal = it },
@@ -68,6 +77,42 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
                 }
             )
         )
+
+//Calories consumed field. (Input)
+        OutlinedTextField(
+            value = consumed,
+            onValueChange = { consumed = it },
+            label = { Text("Calories Consumed") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
+
+        //Calorie goal input. (Input)
+        OutlinedTextField(
+            value = burned,
+            onValueChange = { burned = it },
+            label = { Text("Calories Burned") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
+
+        Text(text = "Remaining: $remaining kcal")
     }
 }
 

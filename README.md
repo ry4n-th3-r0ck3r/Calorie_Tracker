@@ -44,7 +44,9 @@ Currently implemented:
 * Basic Android application
 * Jetpack Compose interface
 * Editable daily calorie goal
-* Numeric calorie input
+* Numeric calories goal, consumed, and burned inputs
+
+
 
 ## Technology
 
