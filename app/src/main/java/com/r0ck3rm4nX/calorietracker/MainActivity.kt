@@ -47,6 +47,8 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
     var dailyGoal by remember { mutableStateOf("2500") }
     var consumed by remember { mutableStateOf("0") }
     var burned by remember { mutableStateOf("0") }
+    var weight by remember { mutableStateOf("") }
+    var height by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
 
@@ -54,6 +56,20 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
     val consumedNumber = consumed.toIntOrNull() ?: 0
     val burnedNumber = burned.toIntOrNull() ?: 0
     val remaining = goalNumber - consumedNumber + burnedNumber
+    val weightNumber = weight.toDoubleOrNull()
+    val heightNumber = height.toDoubleOrNull()
+
+//Calculate BMI
+    val bmi = if (
+        weightNumber != null &&
+        heightNumber != null &&
+        weightNumber > 0 &&
+        heightNumber > 0
+    ) {
+        (weightNumber / (heightNumber * heightNumber)) * 703
+    } else {
+        null
+    }
 
     Column(
         modifier = modifier.padding(16.dp)
@@ -61,11 +77,57 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
         Text(text = "Calorie Tracker")
         Text(text = "Daily Goal")
 
-//Calorie goal input. (Input)
+    //Current weight (Input)
+        Text(text = "Weight (Optional)")
+        OutlinedTextField(
+            value = weight,
+            onValueChange = { weight = it },
+            label = { Text("Weight (lb)") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
+    //Current height (Input)
+        Text(text = "Height (Optional)")
+
+        OutlinedTextField(
+            value = height,
+            onValueChange = { height = it },
+            label = { Text("Height (inches)") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
+    //BMI output
+        if (bmi != null) {
+            Text(text = "BMI: %.1f".format(bmi))
+
+            Text(
+                text = "BMI is a general screening measurement based only on height and weight. " +
+                        "It does not account for factors such as muscle mass, body composition, " +
+                        "or individual health and should not be treated as a complete measure of health."
+            )
+        }
+
+    //Calorie goal input. (Input)
         OutlinedTextField(
             value = dailyGoal,
             onValueChange = { dailyGoal = it },
-            label = { Text("Calories") },
+            label = { Text("Calories Goal") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -78,7 +140,7 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
             )
         )
 
-//Calories consumed field. (Input)
+        //Calories consumed field. (Input)
         OutlinedTextField(
             value = consumed,
             onValueChange = { consumed = it },
@@ -111,7 +173,7 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
                 }
             )
         )
-
+        //Calories remaining (output/calculation)
         Text(text = "Remaining: $remaining kcal")
     }
 }
