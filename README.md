@@ -46,6 +46,7 @@ Currently implemented:
 * Editable daily calorie goal
 * Numeric calories goal, consumed, and burned inputs
 * Optional BMI calculation
+* Optional BMR calculation
 
 
 

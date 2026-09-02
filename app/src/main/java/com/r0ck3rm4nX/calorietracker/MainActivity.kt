@@ -24,6 +24,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.material3.RadioButton
+import androidx.compose.foundation.layout.Row
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +51,8 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
     var burned by remember { mutableStateOf("0") }
     var weight by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
+    var sex by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
 
@@ -58,6 +62,9 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
     val remaining = goalNumber - consumedNumber + burnedNumber
     val weightNumber = weight.toDoubleOrNull()
     val heightNumber = height.toDoubleOrNull()
+    val ageNumber = age.toIntOrNull()
+    val weightKg = weightNumber?.times(0.45359237)
+    val heightCm = heightNumber?.times(2.54)
 
 //Calculate BMI
     val bmi = if (
@@ -71,14 +78,30 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
         null
     }
 
+//Calculate BMR
+    val bmr = if (
+        weightKg != null &&
+        heightCm != null &&
+        ageNumber != null &&
+        weightKg > 0 &&
+        heightCm > 0 &&
+        ageNumber > 0
+    ) {
+        when (sex.lowercase()) {
+            "male" -> 10 * weightKg + 6.25 * heightCm - 5 * ageNumber + 5
+            "female" -> 10 * weightKg + 6.25 * heightCm - 5 * ageNumber - 161
+            else -> null
+        }
+    } else {
+        null
+    }
+
     Column(
         modifier = modifier.padding(16.dp)
     ) {
         Text(text = "Calorie Tracker")
-        Text(text = "Daily Goal")
+        Text(text = "BMI (Optional)")
 
-    //Current weight (Input)
-        Text(text = "Weight (Optional)")
         OutlinedTextField(
             value = weight,
             onValueChange = { weight = it },
@@ -94,9 +117,8 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
                 }
             )
         )
-    //Current height (Input)
-        Text(text = "Height (Optional)")
 
+    //Current height (Input)
         OutlinedTextField(
             value = height,
             onValueChange = { height = it },
@@ -122,6 +144,54 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
                         "or individual health and should not be treated as a complete measure of health."
             )
         }
+
+        Text(text = "BMR (Optional)")
+
+        OutlinedTextField(
+            value = age,
+            onValueChange = { age = it },
+            label = { Text("Age (optional)") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
+
+        Text(text = "Sex used for BMR equation")
+
+        Row {
+            RadioButton(
+                selected = sex == "male",
+                onClick = { sex = "male" }
+            )
+
+            Text(text = "Male")
+
+            RadioButton(
+                selected = sex == "female",
+                onClick = { sex = "female" }
+            )
+
+            Text(text = "Female")
+        }
+
+        if (bmr != null) {
+            Text(text = "Estimated BMR: %.0f kcal/day".format(bmr))
+
+            Text(
+                text = "BMR is estimated using the Mifflin-St Jeor equation. " +
+                        "This calculation estimates resting energy expenditure using " +
+                        "weight, height, age, and sex. Actual energy requirements may vary."
+            )
+        }
+
+        Text(text = "Calories")
 
     //Calorie goal input. (Input)
         OutlinedTextField(
