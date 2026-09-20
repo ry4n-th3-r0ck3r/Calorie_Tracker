@@ -10,7 +10,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.r0ck3rm4nX.calorietracker.ui.theme.CalorieTrackerTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.unit.dp
@@ -26,15 +25,26 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.material3.RadioButton
 import androidx.compose.foundation.layout.Row
+import androidx.room.Room
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val database = Room.databaseBuilder(
+            applicationContext,
+            CalorieDatabase::class.java,
+            "calorie_database"
+        ).build()
+
+        val dailyRecordDao = database.dailyRecordDao()
+
         setContent {
             CalorieTrackerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     CalorieTrackerScreen(
+                        dailyRecordDao = dailyRecordDao,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -44,7 +54,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
+fun CalorieTrackerScreen(
+    dailyRecordDao: DailyRecordDao,
+    modifier: Modifier = Modifier
+) {
 
     var dailyGoal by remember { mutableStateOf("2500") }
     var consumed by remember { mutableStateOf("0") }
@@ -248,10 +261,3 @@ fun CalorieTrackerScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun CalorieTrackerPreview() {
-    CalorieTrackerTheme {
-        CalorieTrackerScreen()
-    }
-}
