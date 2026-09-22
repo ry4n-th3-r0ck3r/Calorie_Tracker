@@ -25,7 +25,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.material3.RadioButton
 import androidx.compose.foundation.layout.Row
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.room.Room
+import androidx.compose.runtime.LaunchedEffect
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +70,24 @@ fun CalorieTrackerScreen(
     var height by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
     var sex by remember { mutableStateOf("") }
+
+    val today = remember {
+        SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+    }
+
+    LaunchedEffect(today) {
+        val record = dailyRecordDao.getByDate(today)
+
+        if (record != null) {
+            dailyGoal = record.calorieGoal.toString()
+            consumed = record.caloriesConsumed.toString()
+            burned = record.caloriesBurned.toString()
+            weight = record.weight?.toString() ?: ""
+            height = record.height?.toString() ?: ""
+            age = record.age?.toString() ?: ""
+            sex = record.sex ?: ""
+        }
+    }
 
     val focusManager = LocalFocusManager.current
 
@@ -113,6 +135,7 @@ fun CalorieTrackerScreen(
         modifier = modifier.padding(16.dp)
     ) {
         Text(text = "Calorie Tracker")
+        Text(text = "Today: $today")
         Text(text = "BMI (Optional)")
 
         OutlinedTextField(
