@@ -70,6 +70,7 @@ fun CalorieTrackerScreen(
     var height by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
     var sex by remember { mutableStateOf("") }
+    var recordLoaded by remember { mutableStateOf(false) }
 
     val today = remember {
         SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
@@ -86,6 +87,33 @@ fun CalorieTrackerScreen(
             height = record.height?.toString() ?: ""
             age = record.age?.toString() ?: ""
             sex = record.sex ?: ""
+        }
+        recordLoaded = true
+    }
+
+    LaunchedEffect(
+        dailyGoal,
+        consumed,
+        burned,
+        weight,
+        height,
+        age,
+        sex,
+        recordLoaded
+    ) {
+        if (recordLoaded) {
+            val record = DailyRecord(
+                date = today,
+                calorieGoal = dailyGoal.toIntOrNull() ?: 0,
+                caloriesConsumed = consumed.toIntOrNull() ?: 0,
+                caloriesBurned = burned.toIntOrNull() ?: 0,
+                weight = weight.toDoubleOrNull(),
+                height = height.toDoubleOrNull(),
+                age = age.toIntOrNull(),
+                sex = sex.ifBlank { null }
+            )
+
+            dailyRecordDao.save(record)
         }
     }
 
@@ -281,6 +309,7 @@ fun CalorieTrackerScreen(
         )
         //Calories remaining (output/calculation)
         Text(text = "Remaining: $remaining kcal")
+
     }
 }
 
