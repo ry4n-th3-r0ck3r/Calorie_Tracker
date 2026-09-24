@@ -30,6 +30,7 @@ import java.util.Date
 import java.util.Locale
 import androidx.room.Room
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material3.Button
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,13 +72,19 @@ fun CalorieTrackerScreen(
     var age by remember { mutableStateOf("") }
     var sex by remember { mutableStateOf("") }
     var recordLoaded by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     val today = remember {
         SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
     }
 
-    LaunchedEffect(today) {
-        val record = dailyRecordDao.getByDate(today)
+    var selectedDate by remember { mutableStateOf(today) }
+
+    LaunchedEffect(selectedDate) {
+
+        recordLoaded = false
+
+        val record = dailyRecordDao.getByDate(selectedDate)
 
         if (record != null) {
             dailyGoal = record.calorieGoal.toString()
@@ -103,7 +110,7 @@ fun CalorieTrackerScreen(
     ) {
         if (recordLoaded) {
             val record = DailyRecord(
-                date = today,
+                date = selectedDate,
                 calorieGoal = dailyGoal.toIntOrNull() ?: 0,
                 caloriesConsumed = consumed.toIntOrNull() ?: 0,
                 caloriesBurned = burned.toIntOrNull() ?: 0,
@@ -163,7 +170,14 @@ fun CalorieTrackerScreen(
         modifier = modifier.padding(16.dp)
     ) {
         Text(text = "Calorie Tracker")
-        Text(text = "Today: $today")
+        Text(text = "Date: $selectedDate")
+
+        Button(
+            onClick = { showDatePicker = true }
+        ) {
+            Text("Select Date")
+        }
+
         Text(text = "BMI (Optional)")
 
         OutlinedTextField(
