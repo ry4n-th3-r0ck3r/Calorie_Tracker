@@ -35,6 +35,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
+import java.util.TimeZone
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,7 +99,16 @@ fun CalorieTrackerScreen(
             height = record.height?.toString() ?: ""
             age = record.age?.toString() ?: ""
             sex = record.sex ?: ""
+        } else {
+            dailyGoal = "2500"
+            consumed = "0"
+            burned = "0"
+            weight = ""
+            height = ""
+            age = ""
+            sex = ""
         }
+
         recordLoaded = true
     }
 
@@ -340,6 +350,13 @@ fun CalorieTrackerScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                            formatter.timeZone = TimeZone.getTimeZone("UTC")
+
+                            selectedDate = formatter.format(Date(millis))
+                        }
+
                         showDatePicker = false
                     }
                 ) {
