@@ -36,6 +36,8 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import java.util.TimeZone
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,6 +125,9 @@ fun CalorieTrackerScreen(
         recordLoaded
     ) {
         if (recordLoaded) {
+
+            delay(500.milliseconds)
+
             val record = DailyRecord(
                 date = selectedDate,
                 calorieGoal = dailyGoal.toIntOrNull() ?: 0,
