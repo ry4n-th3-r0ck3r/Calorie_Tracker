@@ -38,6 +38,7 @@ import androidx.compose.material3.rememberDatePickerState
 import java.util.TimeZone
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
+import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,6 +87,18 @@ fun CalorieTrackerScreen(
     }
 
     var selectedDate by remember { mutableStateOf(today) }
+
+    fun changeDateBy(days: Int) {
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+
+        val currentDate = formatter.parse(selectedDate) ?: return
+
+        val calendar = Calendar.getInstance()
+        calendar.time = currentDate
+        calendar.add(Calendar.DAY_OF_MONTH, days)
+
+        selectedDate = formatter.format(calendar.time)
+    }
 
     LaunchedEffect(selectedDate) {
 
@@ -189,7 +202,25 @@ fun CalorieTrackerScreen(
         modifier = modifier.padding(16.dp)
     ) {
         Text(text = "Calorie Tracker")
-        Text(text = "Date: $selectedDate")
+        Row {
+            Button(
+                onClick = { changeDateBy(-1) }
+            ) {
+                Text("<")
+            }
+
+            Text(
+                text = selectedDate,
+                modifier = Modifier.padding(16.dp)
+            )
+
+            Button(
+                onClick = { changeDateBy(1) },
+                enabled = selectedDate < today
+            ) {
+                Text(">")
+            }
+        }
 
         Button(
             onClick = { showDatePicker = true }
