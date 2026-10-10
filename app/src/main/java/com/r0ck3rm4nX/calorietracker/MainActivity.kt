@@ -70,6 +70,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+fun isValidDecimalInput(value: String): Boolean {
+    return value.isEmpty() ||
+            (value.count { it == '.' } <= 1 &&
+                    value.all { it.isDigit() || it == '.' })
+}
 @Composable
 fun CalorieTrackerScreen(
     dailyRecordDao: DailyRecordDao,
@@ -245,11 +251,15 @@ fun CalorieTrackerScreen(
 
         OutlinedTextField(
             value = weight,
-            onValueChange = { weight = it },
+            onValueChange = { newValue ->
+                if (isValidDecimalInput(newValue)) {
+                    weight = newValue
+                }
+            },
             label = { Text("Weight (lb)") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
+                keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
@@ -262,11 +272,15 @@ fun CalorieTrackerScreen(
     //Current height (Input)
         OutlinedTextField(
             value = height,
-            onValueChange = { height = it },
+            onValueChange = { newValue ->
+                if (isValidDecimalInput(newValue)) {
+                    height = newValue
+                }
+            },
             label = { Text("Height (inches)") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
+                keyboardType = KeyboardType.Decimal,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
@@ -337,7 +351,11 @@ fun CalorieTrackerScreen(
     //Calorie goal input. (Input)
         OutlinedTextField(
             value = dailyGoal,
-            onValueChange = { dailyGoal = it },
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() }) {
+                    dailyGoal = newValue
+                }
+            },
             label = { Text("Calories Goal") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -354,7 +372,11 @@ fun CalorieTrackerScreen(
         //Calories consumed field. (Input)
         OutlinedTextField(
             value = consumed,
-            onValueChange = { consumed = it },
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() }) {
+                    consumed = newValue
+                }
+            },
             label = { Text("Calories Consumed") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -371,7 +393,11 @@ fun CalorieTrackerScreen(
         //Calorie goal input. (Input)
         OutlinedTextField(
             value = burned,
-            onValueChange = { burned = it },
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() }) {
+                    burned = newValue
+                }
+            },
             label = { Text("Calories Burned") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
