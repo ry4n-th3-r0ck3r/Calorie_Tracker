@@ -39,6 +39,10 @@ import java.util.TimeZone
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 import java.util.Calendar
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.clickable
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -199,7 +203,16 @@ fun CalorieTrackerScreen(
     }
 
     Column(
-        modifier = modifier.padding(16.dp)
+        modifier = modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .clickable(
+                indication = null,
+                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+            ) {
+                focusManager.clearFocus()
+            }
     ) {
         Text(text = "Calorie Tracker")
         Row {
