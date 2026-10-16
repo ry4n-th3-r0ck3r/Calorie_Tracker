@@ -173,8 +173,14 @@ fun CalorieTrackerScreen(
     val burnedNumber = burned.toIntOrNull() ?: 0
     val remaining = goalNumber - consumedNumber + burnedNumber
     val weightNumber = weight.toDoubleOrNull()
+    val weightError = weight.isNotEmpty() &&
+            (weightNumber == null || weightNumber <= 0)
     val heightNumber = height.toDoubleOrNull()
+    val heightError = height.isNotEmpty() &&
+            (heightNumber == null || heightNumber <= 0)
     val ageNumber = age.toIntOrNull()
+    val ageError = age.isNotEmpty() &&
+            (ageNumber == null || ageNumber <= 0)
     val weightKg = weightNumber?.times(0.45359237)
     val heightCm = heightNumber?.times(2.54)
 
@@ -257,6 +263,7 @@ fun CalorieTrackerScreen(
                 }
             },
             label = { Text("Weight (lb)") },
+            isError = weightError,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal,
@@ -268,6 +275,9 @@ fun CalorieTrackerScreen(
                 }
             )
         )
+        if (weightError) {
+            Text("Weight must be greater than 0.")
+        }
 
     //Current height (Input)
         OutlinedTextField(
@@ -278,6 +288,7 @@ fun CalorieTrackerScreen(
                 }
             },
             label = { Text("Height (inches)") },
+            isError = heightError,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal,
@@ -289,6 +300,10 @@ fun CalorieTrackerScreen(
                 }
             )
         )
+        if (heightError) {
+            Text("Height must be greater than 0.")
+        }
+
     //BMI output
         if (bmi != null) {
             Text(text = "BMI: %.1f".format(bmi))
@@ -304,8 +319,13 @@ fun CalorieTrackerScreen(
 
         OutlinedTextField(
             value = age,
-            onValueChange = { age = it },
-            label = { Text("Age (optional)") },
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() }) {
+                    age = newValue
+                }
+            },
+            label = { Text("Age in years (optional)") },
+            isError = ageError,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -317,6 +337,9 @@ fun CalorieTrackerScreen(
                 }
             )
         )
+        if (ageError) {
+            Text("Age must be greater than 0.")
+        }
 
         Text(text = "Sex used for BMR equation")
 
