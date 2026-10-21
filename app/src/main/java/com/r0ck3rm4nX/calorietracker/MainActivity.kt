@@ -43,6 +43,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -226,7 +236,14 @@ fun CalorieTrackerScreen(
                 focusManager.clearFocus()
             }
     ) {
-        Text(text = "Calorie Tracker")
+        Text(
+            text = "Calorie Tracker",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         Row {
             Button(
                 onClick = { changeDateBy(-1) }
@@ -253,6 +270,68 @@ fun CalorieTrackerScreen(
             Text("Select Date")
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 4.dp
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "REMAINING",
+                    style = MaterialTheme.typography.labelLarge
+                )
+
+                Text(
+                    text = "$remaining",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Text(
+                    text = "kcal",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    CalorieSummaryItem("Goal", goalNumber)
+                    CalorieSummaryItem("Consumed", consumedNumber)
+                    CalorieSummaryItem("Burned", burnedNumber)
+                }
+            }
+        }
+        @Composable
+        fun CalorieSummaryItem(
+            label: String,
+            value: Int
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelMedium
+                )
+
+                Text(
+                    text = value.toString(),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
         Text(text = "BMI (Optional)")
 
         OutlinedTextField(
@@ -475,6 +554,27 @@ fun CalorieTrackerScreen(
                 state = datePickerState
             )
         }
+    }
+}
+
+@Composable
+fun CalorieSummaryItem(
+    label: String,
+    value: Int
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium
+        )
+
+        Text(
+            text = value.toString(),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
