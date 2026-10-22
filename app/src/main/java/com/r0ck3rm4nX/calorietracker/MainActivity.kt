@@ -108,6 +108,15 @@ fun CalorieTrackerScreen(
 
     var selectedDate by remember { mutableStateOf(today) }
 
+    val displayDate = remember(selectedDate) {
+        val storageFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val displayFormat = SimpleDateFormat("MMMM d, yyyy", Locale.US)
+
+        storageFormat.parse(selectedDate)?.let {
+            displayFormat.format(it)
+        } ?: selectedDate
+    }
+
     fun changeDateBy(days: Int) {
         val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
@@ -244,34 +253,44 @@ fun CalorieTrackerScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row {
-            Button(
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(
                 onClick = { changeDateBy(-1) }
             ) {
-                Text("<")
+                Text(
+                    text = "‹",
+                    fontSize = 32.sp
+                )
             }
 
-            Text(
-                text = selectedDate,
-                modifier = Modifier.padding(16.dp)
-            )
+            TextButton(
+                onClick = { showDatePicker = true }
+            ) {
+                Text(
+                    text = displayDate,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
-            Button(
+            TextButton(
                 onClick = { changeDateBy(1) },
                 enabled = selectedDate < today
             ) {
-                Text(">")
+                Text(
+                    text = "›",
+                    fontSize = 32.sp
+                )
             }
-        }
-
-        Button(
-            onClick = { showDatePicker = true }
-        ) {
-            Text("Select Date")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+//Calorie Card Display
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(
@@ -312,29 +331,98 @@ fun CalorieTrackerScreen(
                 }
             }
         }
-        @Composable
-        fun CalorieSummaryItem(
-            label: String,
-            value: Int
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelMedium
-                )
 
-                Text(
-                    text = value.toString(),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        }
-        Text(text = "BMI (Optional)")
+        Text(
+            text = "Daily Calories",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        //Calorie goal input. (Input)
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = dailyGoal,
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() }) {
+                    dailyGoal = newValue
+                }
+            },
+            label = { Text("Calories Goal") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
+
+        //Calories consumed field. (Input)
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = consumed,
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() }) {
+                    consumed = newValue
+                }
+            },
+            label = { Text("Calories Consumed") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
+
+        //Calorie goal input. (Input)
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = burned,
+            onValueChange = { newValue ->
+                if (newValue.all { it.isDigit() }) {
+                    burned = newValue
+                }
+            },
+            label = { Text("Calories Burned") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Body Information",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = "Optional",
+            style = MaterialTheme.typography.bodySmall
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = weight,
             onValueChange = { newValue ->
                 if (isValidDecimalInput(newValue)) {
@@ -360,6 +448,7 @@ fun CalorieTrackerScreen(
 
     //Current height (Input)
         OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = height,
             onValueChange = { newValue ->
                 if (isValidDecimalInput(newValue)) {
@@ -394,9 +483,8 @@ fun CalorieTrackerScreen(
             )
         }
 
-        Text(text = "BMR (Optional)")
-
         OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = age,
             onValueChange = { newValue ->
                 if (newValue.all { it.isDigit() }) {
@@ -448,72 +536,7 @@ fun CalorieTrackerScreen(
             )
         }
 
-        Text(text = "Calories")
 
-    //Calorie goal input. (Input)
-        OutlinedTextField(
-            value = dailyGoal,
-            onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() }) {
-                    dailyGoal = newValue
-                }
-            },
-            label = { Text("Calories Goal") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            )
-        )
-
-        //Calories consumed field. (Input)
-        OutlinedTextField(
-            value = consumed,
-            onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() }) {
-                    consumed = newValue
-                }
-            },
-            label = { Text("Calories Consumed") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            )
-        )
-
-        //Calorie goal input. (Input)
-        OutlinedTextField(
-            value = burned,
-            onValueChange = { newValue ->
-                if (newValue.all { it.isDigit() }) {
-                    burned = newValue
-                }
-            },
-            label = { Text("Calories Burned") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            )
-        )
-        //Calories remaining (output/calculation)
-        Text(text = "Remaining: $remaining kcal")
 
     }
 
