@@ -30,7 +30,6 @@ import java.util.Date
 import java.util.Locale
 import androidx.room.Room
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
@@ -362,6 +361,8 @@ fun CalorieTrackerScreen(
             )
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         //Calories consumed field. (Input)
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -383,6 +384,8 @@ fun CalorieTrackerScreen(
                 }
             )
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         //Calorie goal input. (Input)
         OutlinedTextField(
@@ -443,8 +446,14 @@ fun CalorieTrackerScreen(
             )
         )
         if (weightError) {
-            Text("Weight must be greater than 0.")
+            Text(
+                text = "Weight must be greater than 0.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
 
     //Current height (Input)
         OutlinedTextField(
@@ -469,19 +478,16 @@ fun CalorieTrackerScreen(
             )
         )
         if (heightError) {
-            Text("Height must be greater than 0.")
-        }
-
-    //BMI output
-        if (bmi != null) {
-            Text(text = "BMI: %.1f".format(bmi))
-
             Text(
-                text = "BMI is a general screening measurement based only on height and weight. " +
-                        "It does not account for factors such as muscle mass, body composition, " +
-                        "or individual health and should not be treated as a complete measure of health."
+                text = "Height must be greater than 0.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
             )
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+    //BMI output
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -505,8 +511,14 @@ fun CalorieTrackerScreen(
             )
         )
         if (ageError) {
-            Text("Age must be greater than 0.")
+            Text(
+                text = "Age must be greater than 0.",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         Text(text = "Sex used for BMR equation")
 
@@ -526,17 +538,43 @@ fun CalorieTrackerScreen(
             Text(text = "Female")
         }
 
-        if (bmr != null) {
-            Text(text = "Estimated BMR: %.0f kcal/day".format(bmr))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "BMR is estimated using the Mifflin-St Jeor equation. " +
-                        "This calculation estimates resting energy expenditure using " +
-                        "weight, height, age, and sex. Actual energy requirements may vary."
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            BodyResultCard(
+                label = "BMI",
+                value = bmi?.let { "%.1f".format(it) } ?: "--",
+                modifier = Modifier.weight(1f)
+            )
+
+            BodyResultCard(
+                label = "BMR",
+                value = bmr?.let { "%.0f".format(it) } ?: "--",
+                unit = "kcal/day",
+                modifier = Modifier.weight(1f)
             )
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
 
+        Text(
+            text = "BMI is a general screening measurement based only on height and weight. " +
+                    "It does not account for factors such as muscle mass, body composition, " +
+                    "or individual health and should not be treated as a complete measure of health.",
+            style = MaterialTheme.typography.bodySmall
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "BMR is estimated using the Mifflin-St Jeor equation. " +
+                    "This calculation estimates resting energy expenditure using weight, height, " +
+                    "age, and sex. Actual energy requirements may vary.",
+            style = MaterialTheme.typography.bodySmall
+        )
 
     }
 
@@ -598,6 +636,48 @@ fun CalorieSummaryItem(
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
+    }
+}
+
+@Composable
+fun BodyResultCard(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    unit: String? = null
+) {
+    Card(
+        modifier = modifier.height(130.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            if (unit != null) {
+                Text(
+                    text = unit,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
     }
 }
 
