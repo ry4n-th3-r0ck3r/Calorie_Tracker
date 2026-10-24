@@ -52,6 +52,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.LinearProgressIndicator
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -202,6 +205,19 @@ fun CalorieTrackerScreen(
     val weightKg = weightNumber?.times(0.45359237)
     val heightCm = heightNumber?.times(2.54)
 
+    val calorieProgress = if (goalNumber > 0) {
+        (consumedNumber.toFloat() / goalNumber.toFloat()).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
+
+    val calorieProgressColor = when {
+        goalNumber <= 0 -> MaterialTheme.colorScheme.primary
+        consumedNumber <= goalNumber -> Color.Green
+        consumedNumber <= goalNumber * 1.3 -> Color.Yellow
+        else -> Color.Red
+    }
+
 //Calculate BMI
     val bmi = if (
         weightNumber != null &&
@@ -318,7 +334,13 @@ fun CalorieTrackerScreen(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                LinearProgressIndicator(
+                    progress = { calorieProgress },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = calorieProgressColor
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
