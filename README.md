@@ -1,6 +1,6 @@
 # Calorie Tracker
 
-Beta Version 1.0
+Version 1.1 (Alpha Testing)
 
 A simple Android calorie and fitness tracking application built with Kotlin and Jetpack Compose.
 
@@ -13,7 +13,6 @@ The project is being built from scratch as both a practical Android application 
 ## Future Plans
 
 * Improved UI
-* Progress visualization
 * Historical tracking and graphs
 
 
@@ -34,7 +33,7 @@ User data will remain on the device unless the user explicitly chooses to export
 
 ## Current Status
 
-Functioning Prototype
+Alpha Testing
 
 Currently implemented:
 

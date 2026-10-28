@@ -146,7 +146,9 @@ fun CalorieTrackerScreen(
             age = record.age?.toString() ?: ""
             sex = record.sex ?: ""
         } else {
-            dailyGoal = "2500"
+            val previousGoal = dailyRecordDao.getPreviousCalorieGoal(selectedDate)
+
+            dailyGoal = previousGoal?.toString() ?: "2500"
             consumed = "0"
             burned = "0"
             weight = ""
@@ -159,6 +161,7 @@ fun CalorieTrackerScreen(
     }
 
     LaunchedEffect(
+        selectedDate,
         dailyGoal,
         consumed,
         burned,

@@ -16,4 +16,13 @@ interface DailyRecordDao {
 
     @Query("SELECT * FROM DailyRecord ORDER BY date DESC")
     suspend fun getAll(): List<DailyRecord>
+
+    @Query("""
+    SELECT calorieGoal
+    FROM DailyRecord
+    WHERE date < :date
+    ORDER BY date DESC
+    LIMIT 1
+""")
+    suspend fun getPreviousCalorieGoal(date: String): Int?
 }
